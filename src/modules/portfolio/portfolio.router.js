@@ -1,10 +1,7 @@
 import express from 'express';
+import * as portfolioService from './portfolio.service.js';
 
 const router = express.Router();
-
-router.get('/users', (req, res) => {
-    throw new Error('Not yet implemented');
-});
 
 router.get('/:username/status', (req, res) => {
     throw new Error('Not yet implemented');
