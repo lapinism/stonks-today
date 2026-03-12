@@ -1,0 +1,59 @@
+:root {
+    --bull-color: #e74c3c; /* 상승장 (빨강) */
+    --bear-color: #3498db; /* 하락장 (파랑) */
+    --bg-color: #f5f6fa;
+    --text-color: #2c3e50;
+}
+
+body {
+    margin: 0;
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+/* 메인 카드 스타일 */
+#status-card {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+    transition: all 0.3s ease;
+}
+
+.yield-display {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+/* 테마 상태별 스타일 */
+body.theme-bull {
+    background-color: #fff0f0;
+}
+
+body.theme-bull #status-card {
+    border: 2px solid var(--bull-color);
+    color: var(--bull-color);
+}
+
+body.theme-bear {
+    background-color: #f0f8ff;
+}
+
+body.theme-bear #status-card {
+    border: 2px solid var(--bear-color);
+    color: var(--bear-color);
+}
