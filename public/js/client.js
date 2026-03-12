@@ -9,13 +9,15 @@ async function fetchStatus() {
     const bodyEl = document.body;
 
     try {
-        const response = await fetch('/api/status');
+        const response = await fetch('/api/user2/status');
         const data = await response.json();
 
         // 데이터 바인딩
-        const prefix = data.totalYield > 0 ? '+' : '';
-        yieldEl.textContent = `${prefix}${data.totalYield}`;
-        messageEl.textContent = data.message;
+        data.yield *= 100;
+        const prefix = data.yield > 0 ? '+' : '';
+        data.yield = data.yield.toFixed(2);
+        yieldEl.textContent = `${prefix}${data.yield}`;
+        messageEl.textContent = data.comment;
 
         // 테마 적용 (Bull or Bear)
         cardEl.classList.remove('loading');
