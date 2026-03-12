@@ -21,13 +21,13 @@ const fetchChartData = async (ticker) => {
     const ret = {};
 
     if (isNaN(ticker)) {
-        const data = await fetch(`https://example.com/`);
+        const data = await fetch(`${process.env.US_STOCK_API_URL}/${!isNaN(ticker) ? ticker + '.KS' : ticker}?interval=1d&range=2mo`);
         const json = await data.json();
 
         const timestamp = json.chart.result[0].timestamp;
         const close = json.chart.result[0].indicators.quote[0].close;
 
-        const rateData = await fetch(`https://example.com/`);
+        const rateData = await fetch(`${process.env.USD_TO_KRW_API_URL}`);
         const rateJson = await rateData.json();
         const USD2KRW = rateJson[0].rate;
 
@@ -41,7 +41,7 @@ const fetchChartData = async (ticker) => {
         twoMonthAgo.setMonth(currentDate.getMonth() - 2);
         const dateStr = twoMonthAgo.toISOString().slice(0,10).replace(/-/g, '');
 
-        const data = await fetch(`https://example.com/`);
+        const data = await fetch(`${process.env.KR_STOCK_API_URL}?symbol=${ticker}&requestType=1&startTime=${dateStr}&endTime=99999999&timeframe=day`);
         const text = await data.text();
         const json = JSON.parse(text.replace(/'/g, '"'))
 
