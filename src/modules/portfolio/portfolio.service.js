@@ -190,5 +190,3 @@ export const getUserHistory = (username) => {
 export const getUserPortfolioStatus = (username) => {
     return calcPortfolioStatus(username);
 };
-
-console.log(await getUserStatus('user2'))

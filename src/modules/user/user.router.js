@@ -10,3 +10,5 @@ router.get('/', (req, res) => {
 router.get('/:username', (req, res) => {
     res.json(userService.findUserByUsername(req.params.username));
 });
+
+export default router;
