@@ -1,25 +1,29 @@
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { getPortfolioStatus } from './modules/portfolio.js';
+import { fileURLToPath } from "url";
+
+import pageRouter from './modules/page/page.router.js';
+import portfolioRouter from './modules/portfolio/portfolio.router.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// 정적 파일 제공 (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// API 라우트: 포트폴리오 상태 반환
-app.get('/api/status', async (req, res) => {
-    try {
-        const status = await getPortfolioStatus('user1');
-        res.json(status);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to calculate stonks' });
-    }
+app.use('/', pageRouter);
+app.use('/api', portfolioRouter);
+
+app.use((req, res, next) => {
+    res.status(404).send('Page Not Found');
+});
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 });
 
 export default app;
