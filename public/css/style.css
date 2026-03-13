@@ -40,10 +40,13 @@ footer {
     text-align: center;
 }
 
+a {
+    color: inherit;
+}
+
 /* 메인 카드 스타일 */
 .status-card {
     display: box;
-    color: var(--text-color);
     text-align: center;
     text-decoration: none;
     width: 100%;
