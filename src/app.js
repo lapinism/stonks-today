@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from "url";
 
+import adminRouter from './modules/admin/admin.router.js';
 import pageRouter from './modules/page/page.router.js';
 import portfolioRouter from './modules/portfolio/portfolio.router.js';
 import userRouter from './modules/user/user.router.js';
@@ -15,6 +16,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use('/admin', adminRouter);
 app.use('/', pageRouter);
 app.use('/api', portfolioRouter);
 app.use('/api/users', userRouter);

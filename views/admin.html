@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stonks Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <main>
+        <h1>Admin Dashboard</h1>
+        
+        <!-- 사용자 추가 섹션 -->
+        <section class="admin-container">
+            <h2>사용자 추가</h2>
+            <form id="user-form" method="POST" action="/admin/users">
+                <div class="form-group">
+                    <label for="username">Username (ID)</label>
+                    <input type="text" id="username" name="username" placeholder="user1" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">이름 (Display Name)</label>
+                    <input type="text" id="name" name="name" placeholder="홍길동" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">PW</label>
+                    <input type="password" id="password" name="password" placeholder="password" required>
+                </div>
+                <button type="submit" class="btn-submit">사용자 생성</button>
+            </form>
+        </section>
+
+        <!-- 트랜잭션 추가 섹션 -->
+        <section class="admin-container">
+            <h2>트랜잭션 추가</h2>
+            <form id="transaction-form" method="POST" action="/admin/transactions">
+                <div class="form-group">
+                    <label for="amount">username</label>
+                    <input type="test" id="username" name="username" placeholder="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">날짜</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">매수/매도</label>
+                    <select id="type" name="type" required>
+                        <option value="BUY">매수</option>
+                        <option value="SELL">매도</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="amount">종목명 (Ticker)</label>
+                    <input type="text" id="ticker" name="ticker" placeholder="012345 or AAA" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">수량</label>
+                    <input type="number" id="quantity" name="quantity" placeholder="10000" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">1주당 평균 가격 (KRW)</label>
+                    <input type="number" id="price" name="price" placeholder="10000" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">PW</label>
+                    <input type="password" id="password" name="password" placeholder="password" required>
+                </div>
+                <button type="submit" class="btn-submit">트랜잭션 기록</button>
+            </form>
+        </section>
+
+        <a href="/" class="back-btn" style="margin-bottom: 2rem;">← 메인으로 돌아가기</a>
+    </main>
+
+</body>
+</html>
