@@ -4,11 +4,11 @@ import * as userService from './user.service.js';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.json(userService.findAllUser());
+    res.json(userService.getAllUsers());
 });
 
 router.get('/:username', (req, res) => {
-    res.json(userService.findUserByUsername(req.params.username));
+    res.json(userService.getUserbyUsername(req.params.username));
 });
 
 export default router;
