@@ -81,9 +81,6 @@ footer {
 }
 
 .theme-bear {
-    background-color: #fff0f0;
-    border: 2px solid var(--bull-color);
-    color: var(--bull-color);
     background-color: #f0f8ff;
     border: 2px solid var(--bear-color);
     color: var(--bear-color);
