@@ -3,22 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stonks Today - 너의 주식은</title>
+    <title>Stonks Today - 오늘의 임스피</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 800px;
+            margin: 1rem;
+            flex-basis: 100%;
+        }
+        .chart-container {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+        }
+        @media (max-width: 480px) {
+            .chart-card {
+                padding: 1rem;
+            }
+        }
+        .back-btn {
+            margin: 1rem;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background-color: #eee;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #ddd;
+        }
+    </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <header>
-            <h1>Stonks Today</h1>
-        </header>
+    <main style="flex-direction: column;">
+        <h1 id="page-title">수익 상세</h1>
         
-        <main id="status-card" class="loading">
-            <div class="yield-display">
-                <span id="yield-val">---</span>%
+        <div class="chart-card">
+            <div class="chart-container">
+                <canvas id="profitChart"></canvas>
             </div>
-            <p id="message">데이터 불러오는 중...</p>
-        </main>
-    </div>
-    <script src="/js/client.js"></script>
+        </div>
+
+        <a href="/" class="back-btn">← 목록으로 돌아가기</a>
+    </main>
+    <footer>
+        Built with ❤️ by <a href="https://github.com/lapinism">@lapinism</a>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // URL 경로에서 username 추출 (예: /user1 -> user1)
+            const username = window.location.pathname.substring(1);
+            document.getElementById('page-title').textContent = `${username}님의 30일 수익 추이`;
+
+            try {
+                const response = await fetch(`/api/users/${username}`);
+                if (!response.ok) throw new Error('Username fetch failed');
+                const usernameData = await response.json();
+                
+                document.getElementById('page-title').textContent = `지난 30일의 ${usernameData[0].name}`;
+                document.title = `오늘의 ${usernameData[0].name}`;
+            }
+            catch (error) {
+                console.error(error);
+            }
+
+            try {
+                const response = await fetch(`/api/${username}/history`);
+                if (!response.ok) throw new Error('History fetch failed');
+                const historyData = await response.json();
+
+                renderChart(historyData);
+            }
+            catch (error) {
+                console.error(error);
+                document.querySelector('.chart-card').innerHTML = '<p style="text-align:center;">데이터를 불러올 수 없습니다.</p>';
+            }
+        });
+
+        function renderChart(data) {
+            const ctx = document.getElementById('profitChart').getContext('2d');
+            
+            // 데이터 개수에 맞춰 라벨 생성 (D-29, D-28 ... Today)
+            const labels = data.map((_, index) => {
+                const dayDiff = data.length - 1 - index;
+                return dayDiff === 0 ? 'Today' : `D-${dayDiff}`;
+            });
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '누적 수익금 (KRW)',
+                        data: data,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('ko-KR').format(context.parsed.y) + '원';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
