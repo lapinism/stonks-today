@@ -40,24 +40,21 @@ const insertUser = db.prepare('INSERT INTO users (username, name) VALUES (?, ?)'
 const insertTransaction = db.prepare('INSERT INTO transactions (username, date, type, ticker, quantity, price) VALUES (?, ?, ?, ?, ?, ?)');
 
 const users = [
-    { username: 'user1', name: '김' },
-    { username: 'user2', name: '이' },
+    { username: 'lim', name: '임스피' },
+    { username: 'yoon', name: '윤스피' },
 ];
 
 const transactions = [
-    // user1 거래 내역
-    // { username: 'user1', date: '2023-10-01', type: 'BUY', ticker: '005930', quantity: 10, price: 70000 },
-    // { username: 'user1', date: '2023-10-05', type: 'BUY', ticker: '035720', quantity: 5, price: 85000 },
-    // { username: 'user1', date: '2023-10-20', type: 'SELL', ticker: '035720', quantity: 2, price: 90000 },
-    { username: 'user1', date: '2023-10-05', type: 'BUY', ticker: '035720', quantity: 16, price: 51800 },
-    { username: 'user1', date: '2023-10-05', type: 'BUY', ticker: '035420', quantity: 4, price: 221500 },
+    { username: 'lim', date: '2023-09-20', type: 'BUY', ticker: '011790', quantity: 10, price: 106100 },
+    { username: 'lim', date: '2023-09-20', type: 'BUY', ticker: 'NU', quantity: 101, price: 20727.16831683168 },
+    { username: 'lim', date: '2023-09-20', type: 'BUY', ticker: 'STNE', quantity: 160, price: 22457.90625 },
+    { username: 'lim', date: '2023-10-10', type: 'BUY', ticker: 'TEM', quantity: 20, price: 78930.65 },
+    { username: 'lim', date: '2023-10-10', type: 'BUY', ticker: 'NUG', quantity: 60, price: 17312.71666666667 },
 
-    // friend1 거래 내역
-    { username: 'user2', date: '2023-09-20', type: 'BUY', ticker: '011790', quantity: 10, price: 106100 },
-    { username: 'user2', date: '2023-09-20', type: 'BUY', ticker: 'NU', quantity: 101, price: 20727.16831683168 },
-    { username: 'user2', date: '2023-09-20', type: 'BUY', ticker: 'STNE', quantity: 160, price: 22457.90625 },
-    { username: 'user2', date: '2023-10-10', type: 'BUY', ticker: 'TEM', quantity: 20, price: 78930.65 },
-    { username: 'user2', date: '2023-10-10', type: 'BUY', ticker: 'NUG', quantity: 60, price: 17312.71666666667 },
+    { username: 'yoon', date: '2023-10-05', type: 'BUY', ticker: 'STNE', quantity: 10, price: 20688.4 },
+    { username: 'yoon', date: '2023-10-05', type: 'BUY', ticker: '005930', quantity: 11, price: 184963.6363636364 },
+    { username: 'yoon', date: '2023-10-05', type: 'BUY', ticker: '229200', quantity: 100, price: 20160 },
+    { username: 'yoon', date: '2023-10-05', type: 'BUY', ticker: '396500', quantity: 50, price: 35814.5 },
 ];
 
 // 트랜잭션으로 데이터 삽입
