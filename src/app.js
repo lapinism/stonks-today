@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 
 import adminRouter from './modules/admin/admin.router.js';
 import pageRouter from './modules/page/page.router.js';
+import historyRouter from './modules/history/history.router.js';
 import portfolioRouter from './modules/portfolio/portfolio.router.js';
 import userRouter from './modules/user/user.router.js';
 
@@ -18,7 +19,8 @@ app.use(express.json());
 
 app.use('/admin', adminRouter);
 app.use('/', pageRouter);
-app.use('/api', portfolioRouter);
+app.use('/api/histories', historyRouter);
+app.use('/api/portfolios', portfolioRouter);
 app.use('/api/users', userRouter);
 
 app.use((req, res, next) => {

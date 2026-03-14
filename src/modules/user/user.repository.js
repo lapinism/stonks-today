@@ -1,19 +1,25 @@
 import db from '../../config/db.js'
 
+export const create = (username, name, password) => {
+    return db.prepare('INSERT INTO user (username, name, password) VALUES (?, ?, ?)').run(username, name, password);
+};
+
 export const findAll = () => {
-    return db.prepare('SELECT * FROM users').all();
-}
+    return db.prepare('SELECT username, name FROM user').all();
+};
 
 export const findByUsername = (username) => {
-    return db.prepare('SELECT * FROM users WHERE username = ?').all(username);
-}
+    return db.prepare('SELECT username, name FROM user WHERE username = ?').get(username);
+};
 
-export const add = (user) => {
-    const stmt = db.prepare('INSERT INTO users (username, name) VALUES (?, ?)');
-    stmt.run(user.username, user.name);
-}
+export const findByPassword = (username, password) => {
+    return db.prepare('SELECT username, name FROM user WHERE username = ? AND password = ?').get(username, password);
+};
 
-export const remove = (username) => {
-    const stmt = db.prepare('DELETE FROM users WHERE username = ?');
-    stmt.run(username);
-}
+export const update = (username, name, password) => {
+    return db.prepare('UPDATE user SET name = ?, password = ? WHERE username = ?').run(name, password, username);
+};
+
+export const deleteByUsername = (username, password) => {
+    return db.prepare('DELETE FROM user WHERE username = ? AND password = ?').run(username, password);
+};

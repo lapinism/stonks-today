@@ -3,16 +3,11 @@ import * as portfolioService from './portfolio.service.js';
 
 const router = express.Router();
 
+router.get('/:username', async (req, res) => {
+    res.send(await portfolioService.getPortfolioByUsername(req.params.username));
+});
 router.get('/:username/status', async (req, res) => {
-    res.send(await portfolioService.getUserStatus(req.params.username));
-});
-
-router.get('/:username/history', async (req, res) => {
-    res.send(await portfolioService.getUserHistory(req.params.username));
-});
-
-router.get('/:username/portfolio', async (req, res) => {
-    res.send(await portfolioService.getUserPortfolioStatus(req.params.username))
+    res.send(await portfolioService.getPortfolioStatusByUsername(req.params.username));
 });
 
 export default router;

@@ -68,15 +68,15 @@
                 if (!response.ok) throw new Error('Username fetch failed');
                 const usernameData = await response.json();
                 
-                document.getElementById('page-title').textContent = `지난 30일의 ${usernameData[0].name}`;
-                document.title = `오늘의 ${usernameData[0].name}`;
+                document.getElementById('page-title').textContent = `지난 30일의 ${usernameData.name}`;
+                document.title = `오늘의 ${usernameData.name}`;
             }
             catch (error) {
                 console.error(error);
             }
 
             try {
-                const response = await fetch(`/api/${username}/history`);
+                const response = await fetch(`/api/histories/${username}`);
                 if (!response.ok) throw new Error('History fetch failed');
                 const historyData = await response.json();
 
