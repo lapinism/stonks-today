@@ -50,7 +50,7 @@ async function fetchStatusForUser(username) {
     const cardEl = document.getElementById(`card-${username}`);
 
     try {
-        const response = await fetch(`/api/${username}/status`);
+        const response = await fetch(`/api/portfolios/${username}/status`);
         if (!response.ok) throw new Error('Server response was not ok.');
         const data = await response.json();
 

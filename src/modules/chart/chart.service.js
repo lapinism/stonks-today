@@ -1,7 +1,7 @@
-import * as historyRepository from './history.repository.js'
-import * as portfolioRepository from '../modules/portfolio/portfolio.repository.js';
+import * as historyRepository from '../history/history.repository.js'
+import * as portfolioRepository from '../portfolio/portfolio.repository.js';
 
-const fetchChartData = async (ticker) => {
+export const fetchChartData = async (ticker) => {
     const ret = {};
 
     if (isNaN(ticker)) {
@@ -48,7 +48,7 @@ const fetchChartData = async (ticker) => {
     return ret;
 };
 
-const calcHistory = async (username) => {
+export const calcHistory = async (username) => {
     const history = historyRepository.findByUsername(username);
     const portfolio  = portfolioRepository.findByUsername(username);
     const chartData = {};
@@ -88,7 +88,7 @@ const calcHistory = async (username) => {
     return ret;
 };
 
-const calcTodayYield = async (username) => {
+export const calcTodayYield = async (username) => {
     const portfolio  = portfolioRepository.findByUsername(username);
     let principal = 0;
     let valuation = 0;
