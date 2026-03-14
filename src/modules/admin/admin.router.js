@@ -25,7 +25,7 @@ router.post('/users', (req, res) => {
     }
 });
 
-router.post('/transactions', (req, res) => {
+router.post('/portfolios', (req, res) => {
     if (req.body.password === process.env.ADMIN_PASSWORD) {
         console.warn(`${req.ip} tried to add new transaction`);
         adminService.addTransaction(req.body);
