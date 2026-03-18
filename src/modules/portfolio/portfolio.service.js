@@ -53,3 +53,41 @@ export const updatePortfolio = (username, ticker, quantity, price) => {
 export const deletePortfolio = (username, ticker) => {
     return portfolioRepository.deleteByTicker(username, ticker);
 };
+
+export const verifyPortfolio = async (req, res, next) => {
+    const { ticker } = req.body;
+
+    // ticker
+    if (!ticker) {
+        res.status(400).send({ message: 'Ticker is required' });
+        return;
+    }
+
+    try {
+        const chartData = await chartService.fetchChartData(ticker);
+        if (!chartData) {
+            res.status(400).send({ message: 'Invalid ticker' });
+            return;
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(400).send({ message: 'Invalid ticker or data fetch failed' });
+        return;
+    }
+    
+    // quantity
+    if (req.body.quantity === undefined || isNaN(req.body.quantity) || req.body.quantity <= 0) {
+        res.status(400).send({ message: 'Quantity must be real number greater than 0' });
+        return;
+    }
+
+    // price
+    if (req.body.price === undefined || isNaN(req.body.price) || req.body.price <= 0) {
+        res.status(400).send({ message: 'Price must be real number greater than 0' });
+        return;
+    }
+
+    // everything is fine
+    next();
+};

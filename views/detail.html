@@ -51,7 +51,7 @@
                 <canvas id="profitChart"></canvas>
             </div>
         </div>
-
+        <a href="#" class="back-btn" id="edit-btn">수정</a>
         <a href="/" class="back-btn">← 목록으로 돌아가기</a>
     </main>
     <footer>
@@ -62,6 +62,7 @@
             // URL 경로에서 username 추출 (예: /user1 -> user1)
             const username = window.location.pathname.substring(1);
             document.getElementById('page-title').textContent = `${username}님의 30일 수익 추이`;
+            document.getElementById('edit-btn').href = `${window.location.pathname}/edit`;
 
             try {
                 const response = await fetch(`/api/users/${username}`);

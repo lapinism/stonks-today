@@ -12,6 +12,10 @@ export const findByUsername = (username) => {
     return db.prepare('SELECT * FROM portfolio WHERE username = ?').all(username);
 };
 
+export const findByTicker = (username, ticker) => {
+    return db.prepare('SELECT * FROM portfolio WHERE username = ? AND ticker = ?').run(username, ticker);
+};
+
 export const update = (username, ticker, quantity, price) => {
     return db.prepare('UPDATE portfolio SET quantity = ?, price = ? WHERE username = ? AND ticker = ?').run(quantity, price, username, ticker);
 };
