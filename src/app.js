@@ -1,4 +1,5 @@
 import express from 'express';
+import session from 'express-session';
 import path from 'path';
 import { fileURLToPath } from "url";
 
@@ -16,6 +17,18 @@ const app = express();
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.set('trust proxy', 1)
+app.use(session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: true,
+        httpOnly: true,
+        maxAge: 300000
+    }
+}));
 
 app.use('/admin', adminRouter);
 app.use('/', pageRouter);
