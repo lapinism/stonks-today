@@ -1,7 +1,22 @@
 import * as historyRepository from '../history/history.repository.js'
 import * as portfolioRepository from '../portfolio/portfolio.repository.js';
 
+const cache = new Map();
+let lastUpdate = new Date().toISOString().slice(0, 10);
+
 export const fetchChartData = async (ticker) => {
+    if (lastUpdate !== new Date().toISOString().slice(0, 10)) {
+        cache.clear();
+    }
+    lastUpdate = new Date().toISOString().slice(0, 10);
+
+    const now = Date.now();
+    const cached = cache.get(ticker);
+
+    if (cached && cached.expire > now) {
+        return cached.value;
+    }
+
     const ret = {};
 
     if (isNaN(ticker)) {
@@ -44,6 +59,11 @@ export const fetchChartData = async (ticker) => {
             ret[dateStr] = ret[prevDate.toISOString().slice(0,10)];
         }
     }
+
+    cache.set(ticker, {
+        value: ret,
+        expire: now + 1000 * 60 * 1
+    });
 
     return ret;
 };
