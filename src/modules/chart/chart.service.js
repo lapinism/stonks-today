@@ -61,6 +61,11 @@ export const calcHistory = async (username) => {
     const today = new Date();
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(today.getDate() - 30);
+    const threshold = new Date();
+    threshold.setDate(today.getDate() - 31);
+
+    // delete old history data in db
+    historyRepository.deleteByDate(username, '0000-00-00', threshold.toISOString().slice(0, 10));
 
     let ret = [];
     let currentTxsIdx = 0;
