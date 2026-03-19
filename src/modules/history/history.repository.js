@@ -16,6 +16,6 @@ export const update = (username, date, principal, valuation) => {
     return db.prepare('UPDATE history SET principal = ?, valuation = ? WHERE username = ? AND date = ?').run(principal, valuation, username, date);
 };
 
-export const deleteByDate = (username, date) => {
-    return db.prepare('DELETE FROM history WHERE username = ? AND date = ?').run(username, date);
+export const deleteByDate = (username, dateBegin, dateEnd) => {
+    return db.prepare('DELETE FROM history WHERE username = ? AND date >= ? AND date <= ?').run(username, dateBegin, dateEnd);
 };

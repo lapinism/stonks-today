@@ -24,18 +24,33 @@
                 </div>
                 <div class="form-group">
                     <label for="name">PW</label>
-                    <input type="password" id="userpw" name="userpw" placeholder="password" required>
-                </div>
-                <div class="form-group">
-                    <label for="name">PW</label>
                     <input type="password" id="password" name="password" placeholder="password" required>
                 </div>
                 <button type="submit" class="btn-submit">사용자 생성</button>
             </form>
         </section>
 
-        <!-- 트랜잭션 추가 섹션 -->
+        <!-- 수익률 캐시 삭제 섹션 -->
         <section class="admin-container">
+            <h2>캐시 삭제</h2>
+            <form id="delete-cache-form">
+                <div class="form-group">
+                    <label for="username">Username (ID)</label>
+                    <input type="text" id="username" name="username" placeholder="user1" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">시작일</label>
+                    <input type="date" id="datebegin" name="datebegin" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">종료일</label>
+                    <input type="date" id="dateend" name="dateend" required>
+                </div>
+                <button type="submit" class="btn-submit">캐시 삭제</button>
+            </form>
+        </section>
+
+        <!-- <section class="admin-container">
             <h2>트랜잭션 추가</h2>
             <form id="transaction-form" method="POST" action="/admin/portfolios">
                 <div class="form-group">
@@ -60,10 +75,35 @@
                 </div>
                 <button type="submit" class="btn-submit">트랜잭션 기록</button>
             </form>
-        </section>
+        </section> -->
 
         <a href="/" class="back-btn" style="margin-bottom: 2rem;">← 메인으로 돌아가기</a>
     </main>
 
+    <script>
+        document.getElementById('delete-cache-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                dateBegin: formData.get('datebegin'),
+                dateEnd: formData.get('dateend')
+            };
+
+            try {
+                const response = await fetch('/admin/histories', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) alert('캐시가 삭제되었습니다.');
+                else alert('삭제에 실패했습니다.');
+            } catch (error) {
+                console.error(error);
+                alert('오류가 발생했습니다.');
+            }
+        });
+    </script>
 </body>
 </html>

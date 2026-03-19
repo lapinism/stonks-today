@@ -9,32 +9,55 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', adminService.isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, '../../../views/admin.html'));
 });
+router.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../../views/login.html'));
+});
 
-router.post('/users', (req, res) => {
-    if (req.body.password === process.env.ADMIN_PASSWORD) {
-        console.warn(`${req.ip} tried to add new user`);
+router.post('/login', adminService.tryAdminLogin, adminService.isAdmin, (req, res) => {
+    res.redirect('/admin');
+});
+
+router.post('/users', adminService.isAdmin, (req, res) => {
+    console.warn(`${req.ip} tried to add new user`);
+    try {
         adminService.addUser(req.body);
-        res.redirect('/admin');
     }
-    else {
-        console.warn(`${req.ip} tried to login with wrong password`);
-        res.status(401).send('Unauthorized');
+    catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+        return;
     }
+    res.sendStatus(201);
 });
 
-router.post('/portfolios', (req, res) => {
-    if (req.body.password === process.env.ADMIN_PASSWORD) {
-        console.warn(`${req.ip} tried to add new transaction`);
+router.post('/portfolios', adminService.isAdmin, (req, res) => {
+    console.warn(`${req.ip} tried to add new transaction`);
+    try {
         adminService.addTransaction(req.body);
-        res.redirect('/admin');
     }
-    else {
-        console.warn(`${req.ip} tried to login with wrong password`);
-        res.status(401).send('Unauthorized');
+    catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+        return;
     }
+    res.sendStatus(201);
 });
+
+router.delete('/histories', adminService.isAdmin, (req, res) => {
+    console.warn(`${req.ip} tried to delete history`);
+    try {
+        adminService.deleteHistory(req.body);
+    }
+    catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+        return;
+    }
+    res.sendStatus(204);
+});
+
 
 export default router;
