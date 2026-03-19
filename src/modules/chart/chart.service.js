@@ -73,8 +73,15 @@ export const calcHistory = async (username) => {
     const portfolio  = portfolioRepository.findByUsername(username);
     const chartData = {};
     let principal = 0;
+    
+    const tickers = [...new Set(portfolio.map(tx => tx.ticker))];
+    const chartDataList = await Promise.all(tickers.map(ticker => fetchChartData(ticker)));
+    
+    tickers.forEach((ticker, index) => {
+        chartData[ticker] = chartDataList[index];
+    });
+
     for (const tx of portfolio) {
-        chartData[tx.ticker] = await fetchChartData(tx.ticker);
         principal += tx.quantity * tx.price;
     }
 
