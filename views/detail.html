@@ -119,14 +119,16 @@
                 lineColor = '#3498db';
                 backgroundColor = 'rgba(52, 152, 219, 0.1)';
             }
+            
+            const chartData = data.map(rate => rate * 100);
 
             new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: '누적 수익금 (KRW)',
-                        data: data,
+                        label: '누적 수익률 (%)',
+                        data: chartData,
                         borderColor: lineColor,
                         backgroundColor: backgroundColor,
                         tension: 0.3,
@@ -148,7 +150,7 @@
                                         label += ': ';
                                     }
                                     if (context.parsed.y !== null) {
-                                        label += new Intl.NumberFormat('ko-KR').format(context.parsed.y) + '원';
+                                        label += context.parsed.y.toFixed(2) + '%';
                                     }
                                     return label;
                                 }
@@ -159,7 +161,7 @@
                         y: {
                             ticks: {
                                 callback: function(value) {
-                                    return new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(value);
+                                    return value + '%';
                                 }
                             }
                         }
