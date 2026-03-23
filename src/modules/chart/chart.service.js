@@ -101,21 +101,21 @@ export const calcHistory = async (username) => {
         currentDate.setDate(thirtyDaysAgo.getDate() + i);
         const dateStr = currentDate.toISOString().split('T')[0];
 
-        let valuation = 0;
         const existingHistory = history.find(h => h.date === dateStr);
 
         if (existingHistory) {
-            valuation = existingHistory.valuation;
+            ret.push(existingHistory.principal > 0 ? (existingHistory.valuation - existingHistory.principal) / existingHistory.principal : 0);
         }
         else {
+            let valuation = 0;
             for (const tx of portfolio) {
                 valuation += tx.quantity * chartData[tx.ticker][dateStr];
             }
             if (i < 30) {
                 historyRepository.create(username, dateStr, principal, valuation);
             }
+            ret.push(principal > 0 ? (valuation - principal) / principal : 0);
         }
-        ret.push(principal > 0 ? (valuation - principal) / principal : 0);
     }
 
     return ret;
