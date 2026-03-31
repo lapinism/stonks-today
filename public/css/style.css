@@ -46,7 +46,7 @@ a {
 
 /* 메인 카드 스타일 */
 .status-card {
-    display: box;
+    display: block;
     text-align: center;
     text-decoration: none;
     width: 100%;
@@ -66,10 +66,16 @@ a {
 }
 
 .yield-display {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5rem;
     font-size: 4rem;
     font-weight: 800;
     margin-bottom: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
 }
 
 .status-card p {

@@ -59,6 +59,16 @@ async function fetchStatusForUser(username) {
         yieldEl.textContent = `${prefix}${data.yield.toFixed(2)}`;
         messageEl.textContent = data.comment;
 
+        // 텍스트 길이에 따른 폰트 크기 동적 조절
+        const displayContainer = yieldEl.parentElement;
+        displayContainer.style.fontSize = '4rem'; // 초기화
+        let currentSize = 4;
+        
+        while (displayContainer.scrollWidth > displayContainer.clientWidth && currentSize > 1) {
+            currentSize -= 0.1;
+            displayContainer.style.fontSize = `${currentSize}rem`;
+        }
+
         cardEl.classList.remove('loading');
         cardEl.classList.add(`theme-${data.mood}`);
     } catch (error) {
