@@ -11,7 +11,8 @@ export const fetchChartData = async (ticker) => {
     lastUpdate = new Date().toISOString().slice(0, 10);
 
     const now = Date.now();
-    const cached = cache.get(ticker);
+    const cacheKey = `${ticker}`;
+    const cached = cache.get(cacheKey);
 
     if (cached && cached.expire > now) {
         return cached.value;
@@ -20,7 +21,7 @@ export const fetchChartData = async (ticker) => {
     const ret = {};
 
     if (isNaN(ticker)) {
-        const data = await fetch(`${process.env.US_STOCK_API_URL}/${!isNaN(ticker) ? ticker + '.KS' : ticker}?interval=1d&range=2mo`);
+        const data = await fetch(`${process.env.US_STOCK_API_URL}/${!isNaN(ticker) ? ticker + '.KS' : ticker}?interval=1d&range=2y`);
         const json = await data.json();
 
         const timestamp = json.chart.result[0].timestamp;
@@ -36,9 +37,9 @@ export const fetchChartData = async (ticker) => {
     }
     else {
         const currentDate = new Date();
-        const twoMonthAgo = new Date();
-        twoMonthAgo.setMonth(currentDate.getMonth() - 2);
-        const dateStr = twoMonthAgo.toISOString().slice(0,10).replace(/-/g, '');
+        const queryDate = new Date();
+        queryDate.setMonth(currentDate.getMonth() - 24 - 1);
+        const dateStr = queryDate.toISOString().slice(0,10).replace(/-/g, '');
 
         const data = await fetch(`${process.env.KR_STOCK_API_URL}?symbol=${ticker}&requestType=1&startTime=${dateStr}&endTime=99999999&timeframe=day`);
         const text = await data.text();
@@ -49,18 +50,22 @@ export const fetchChartData = async (ticker) => {
         }
     }
 
-    for (let i = 0; i <= 40; i++) {
-        const currentDate = new Date();
-        currentDate.setDate(new Date().getDate() - 40 + i);
-        const dateStr = currentDate.toISOString().slice(0,10);
+    const fillDays = 24 * 31 + 10;
+    const endDate = new Date();
+    let iterDate = new Date();
+    iterDate.setDate(endDate.getDate() - fillDays);
+
+    while (iterDate <= endDate) {
+        const dateStr = iterDate.toISOString().slice(0, 10);
         if (!ret[dateStr]) {
-            const prevDate = new Date(currentDate);
-            prevDate.setDate(currentDate.getDate() - 1);
-            ret[dateStr] = ret[prevDate.toISOString().slice(0,10)];
+            const prevDate = new Date(iterDate);
+            prevDate.setDate(iterDate.getDate() - 1);
+            ret[dateStr] = ret[prevDate.toISOString().slice(0, 10)];
         }
+        iterDate.setDate(iterDate.getDate() + 1);
     }
 
-    cache.set(ticker, {
+    cache.set(cacheKey, {
         value: ret,
         expire: now + 1000 * 60 * 1
     });
@@ -68,14 +73,15 @@ export const fetchChartData = async (ticker) => {
     return ret;
 };
 
-export const calcHistory = async (username) => {
+export const calcHistory = async (username, period = 1) => {
+    const months = parseInt(period) || 1;
     const history = historyRepository.findByUsername(username);
     const portfolio  = portfolioRepository.findByUsername(username);
     const chartData = {};
     let principal = 0;
     
     const tickers = [...new Set(portfolio.map(tx => tx.ticker))];
-    const chartDataList = await Promise.all(tickers.map(ticker => fetchChartData(ticker)));
+    const chartDataList = await Promise.all(tickers.map(ticker => fetchChartData(ticker, months)));
     
     tickers.forEach((ticker, index) => {
         chartData[ticker] = chartDataList[index];
@@ -86,21 +92,21 @@ export const calcHistory = async (username) => {
     }
 
     const today = new Date();
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-    const threshold = new Date();
-    threshold.setDate(today.getDate() - 31);
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+    const threshold = new Date(startDate);
+    threshold.setMonth(today.getMonth() - 12);
+    threshold.setDate(threshold.getDate() - 1);
 
     // delete old history data in db
     historyRepository.deleteByDate(username, '0000-00-00', threshold.toISOString().slice(0, 10));
 
     let ret = [];
-    let currentTxsIdx = 0;
-    for (let i = 0; i <= 30; i++) {
-        const currentDate = new Date(thirtyDaysAgo);
-        currentDate.setDate(thirtyDaysAgo.getDate() + i);
-        const dateStr = currentDate.toISOString().split('T')[0];
+    let iterDate = new Date(startDate);
+    const todayStr = today.toISOString().slice(0, 10);
 
+    while (iterDate <= today) {
+        const dateStr = iterDate.toISOString().slice(0, 10);
         const existingHistory = history.find(h => h.date === dateStr);
 
         if (existingHistory) {
@@ -109,13 +115,21 @@ export const calcHistory = async (username) => {
         else {
             let valuation = 0;
             for (const tx of portfolio) {
-                valuation += tx.quantity * chartData[tx.ticker][dateStr];
+                const priceAtDate = chartData[tx.ticker][dateStr];
+                if (priceAtDate === undefined || priceAtDate === null) {
+                    console.warn(`Price data missing for ${tx.ticker} on ${dateStr}. Using portfolio price: ${tx.price}`);
+                    valuation += tx.quantity * tx.price;
+                }
+                else {
+                    valuation += tx.quantity * priceAtDate;
+                }
             }
-            if (i < 30) {
+            if (dateStr !== todayStr) {
                 historyRepository.create(username, dateStr, principal, valuation);
             }
             ret.push(principal > 0 ? (valuation - principal) / principal : 0);
         }
+        iterDate.setDate(iterDate.getDate() + 1);
     }
 
     return ret;
@@ -125,10 +139,19 @@ export const calcTodayYield = async (username) => {
     const portfolio  = portfolioRepository.findByUsername(username);
     let principal = 0;
     let valuation = 0;
+    const todayStr = new Date().toISOString().slice(0, 10);
+
     for (const tx of portfolio) {
         const chartData = await fetchChartData(tx.ticker);
         principal += tx.quantity * tx.price;
-        valuation += tx.quantity * chartData[new Date().toISOString().slice(0,10)];
+
+        const priceToday = chartData[todayStr];
+        if (priceToday === undefined || priceToday === null) {
+            console.warn(`Price data missing for ${tx.ticker} on ${todayStr}. Using portfolio price: ${tx.price}`);
+            valuation += tx.quantity * tx.price;
+        } else {
+            valuation += tx.quantity * priceToday;
+        }
     }
     return principal > 0 ? (valuation - principal) / principal : 0;
 };

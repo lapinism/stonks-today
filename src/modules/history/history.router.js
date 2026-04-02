@@ -4,7 +4,9 @@ import * as historyService from './history.service.js';
 const router = express.Router();
 
 router.get('/:username', async (req, res) => {
-    res.send(await historyService.getHistoryByUsername(req.params.username));
+    const { username } = req.params;
+    const { period } = req.query;
+    res.send(await historyService.getHistoryByUsername(username, period));
 });
 
 export default router;

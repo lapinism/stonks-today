@@ -1,8 +1,8 @@
 import * as historyRepository from './history.repository.js'
 import * as chartService from '../chart/chart.service.js';
 
-export const getHistoryByUsername = async (username) => {
-    return chartService.calcHistory(username);
+export const getHistoryByUsername = async (username, period) => {
+    return chartService.calcHistory(username, period);
 };
 
 export const createHistory = (username, date, principal, valuation) => {

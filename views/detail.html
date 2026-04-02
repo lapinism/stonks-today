@@ -40,12 +40,35 @@
         .back-btn:hover {
             background-color: #ddd;
         }
+        .period-selector {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .period-btn {
+            padding: 0.5rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .period-btn.active {
+            background: var(--text-color, #333);
+            color: white;
+            border-color: var(--text-color, #333);
+        }
     </style>
 </head>
 <body>
     <main style="flex-direction: column;">
         <h1 id="page-title">수익 상세</h1>
-        
+        <div class="period-selector">
+            <button class="period-btn active" data-period="1">1개월</button>
+            <button class="period-btn" data-period="12">1년</button>
+        </div>
         <div class="chart-card">
             <div class="chart-container">
                 <canvas id="profitChart"></canvas>
@@ -58,29 +81,42 @@
         Built with ❤️ by <a href="https://github.com/lapinism">@lapinism</a>
     </footer>
     <script>
+        let myChart = null;
+        const username = window.location.pathname.substring(1);
+        let displayName = username;
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // URL 경로에서 username 추출 (예: /user1 -> user1)
-            const username = window.location.pathname.substring(1);
-            document.getElementById('page-title').textContent = `${username}님의 30일 수익 추이`;
             document.getElementById('edit-btn').href = `${window.location.pathname}/edit`;
 
             try {
                 const response = await fetch(`/api/users/${username}`);
                 if (!response.ok) throw new Error('Username fetch failed');
                 const usernameData = await response.json();
-                
-                document.getElementById('page-title').textContent = `지난 30일의 ${usernameData.name}`;
+                displayName = usernameData.name;
                 document.title = `오늘의 ${usernameData.name}`;
             }
             catch (error) {
                 console.error(error);
             }
 
+            loadHistory('1');
+
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    loadHistory(e.target.dataset.period);
+                });
+            });
+        });
+
+        async function loadHistory(period) {
             try {
-                const response = await fetch(`/api/histories/${username}`);
+                const response = await fetch(`/api/histories/${username}?period=${period}`);
                 if (!response.ok) throw new Error('History fetch failed');
                 const historyData = await response.json();
 
+                document.getElementById('page-title').textContent = `지난 ${period === '12' ? '1년' : '30일'}의 ${displayName}`;
                 renderChart(historyData);
 
                 const lastValue = historyData[historyData.length - 1];
@@ -97,10 +133,12 @@
                 console.error(error);
                 document.querySelector('.chart-card').innerHTML = '<p style="text-align:center;">데이터를 불러올 수 없습니다.</p>';
             }
-        });
+        }
 
         function renderChart(data) {
             const ctx = document.getElementById('profitChart').getContext('2d');
+            
+            if (myChart) myChart.destroy();
             
             // 데이터 개수에 맞춰 라벨 생성 (D-29, D-28 ... Today)
             const labels = data.map((_, index) => {
@@ -122,7 +160,7 @@
             
             const chartData = data.map(rate => rate * 100);
 
-            new Chart(ctx, {
+            myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
