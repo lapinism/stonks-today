@@ -1,5 +1,9 @@
 # 📈 Stonks Today (오늘의 임스피)
 
+<p align="center">
+   <img src="https://github.com/user-attachments/assets/d9d5044d-2344-4f24-99bc-b30dc5b03eff" width="50%" alt="오늘의 임스피"/>
+</p>
+
 > **"친구에게 물어볼 필요 없이, 오늘의 수익률을 웹에서 바로 확인하세요!"**  
 > 카톡을 보내기 전, 오늘의 수익률로 친구의 기분을 먼저 확인해보세요! 😊
 
